@@ -24,7 +24,13 @@ type OtherActivitySection = {
   updatedAt: string;
 };
 
-const emptySectionForm = { title: "", sortOrder: 0, listStyle: "default" as const };
+type SectionForm = {
+  title: string;
+  sortOrder: number;
+  listStyle: "default" | "award";
+};
+
+const emptySectionForm: SectionForm = { title: "", sortOrder: 0, listStyle: "default" };
 const emptyItemForm = { text: "", sortOrder: 0 };
 
 export function OtherActivitiesManagement() {
@@ -36,7 +42,7 @@ export function OtherActivitiesManagement() {
 
   const [sectionModalOpen, setSectionModalOpen] = useState(false);
   const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
-  const [sectionForm, setSectionForm] = useState(emptySectionForm);
+  const [sectionForm, setSectionForm] = useState<SectionForm>(emptySectionForm);
 
   const [itemModalOpen, setItemModalOpen] = useState(false);
   const [itemSectionId, setItemSectionId] = useState<string | null>(null);

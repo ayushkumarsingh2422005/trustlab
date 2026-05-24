@@ -82,13 +82,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "title is required." }, { status: 400 });
   }
 
-  await connectToDb();
-  const created = await OtherActivitySection.create({
-    title,
-    sortOrder,
-    listStyle,
-    items: [],
-  });
+  const created = await dbQuery(() =>
+    OtherActivitySection.create({
+      title,
+      sortOrder,
+      listStyle,
+      items: [],
+    }),
+  );
 
   return NextResponse.json(
     { otherActivitySection: serializeSection(created) },

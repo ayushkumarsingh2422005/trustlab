@@ -64,11 +64,12 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     return NextResponse.json({ error: "Section not found." }, { status: 404 });
   }
 
-  const item = section.items.id(itemId);
-  if (!item) {
+  const itemIndex = section.items.findIndex((entry) => String(entry._id) === itemId);
+  if (itemIndex < 0) {
     return NextResponse.json({ error: "Item not found." }, { status: 404 });
   }
 
+  const item = section.items[itemIndex];
   if (typeof body.text === "string" && body.text.trim()) {
     item.text = body.text.trim();
   }
@@ -76,6 +77,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   if (typeof body.sortOrder === "number" && Number.isFinite(body.sortOrder)) {
     item.sortOrder = body.sortOrder;
   }
+  section.items[itemIndex] = item;
 
   await section.save();
   return NextResponse.json({ otherActivitySection: serializeSection(section) });
@@ -98,12 +100,12 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
     return NextResponse.json({ error: "Section not found." }, { status: 404 });
   }
 
-  const hadItem = section.items.id(itemId);
-  if (!hadItem) {
+  const nextItems = section.items.filter((entry) => String(entry._id) !== itemId);
+  if (nextItems.length === section.items.length) {
     return NextResponse.json({ error: "Item not found." }, { status: 404 });
   }
 
-  section.items.pull(itemId);
+  section.items = nextItems;
   await section.save();
 
   return NextResponse.json({ ok: true });
